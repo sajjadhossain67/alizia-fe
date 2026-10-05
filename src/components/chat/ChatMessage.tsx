@@ -5,11 +5,11 @@ import { Message } from '../../types';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useApp } from '../../context/AppContext';
 import { speechService } from '../../services/speech';
-import { Sparkles, ChevronDown, Copy, Volume2, ThumbsUp, Check, ShieldCheck } from 'lucide-react';
+import { Sparkles, ChevronDown, Copy, Volume2, ThumbsUp, Check } from 'lucide-react';
 import Image from 'next/image';
 
 export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
-  const { showToast, setActiveProof } = useApp();
+  const { showToast } = useApp();
   const [thinkingOpen, setThinkingOpen] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -109,20 +109,6 @@ export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
         {/* Actions Toolbar */}
         {!message.isLive && message.content && (
           <div className="message-actions-toolbar flex items-center gap-2 mt-2">
-            {message.proof && (
-              <button
-                className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 transition-all shadow-sm shadow-emerald-500/10 mr-1"
-                onClick={() => setActiveProof(message.proof)}
-                title="Inspect atomic claim decomposition, source spans, and sandbox tests"
-              >
-                <ShieldCheck size={13} className="text-emerald-400" />
-                <span>Show Proof</span>
-                <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-mono text-emerald-300 uppercase">
-                  {message.proof.verifier_verdict} {(message.proof.confidence * 100).toFixed(0)}%
-                </span>
-              </button>
-            )}
-
             <button
               className="msg-action-btn copy-msg-btn"
               onClick={handleCopy}
