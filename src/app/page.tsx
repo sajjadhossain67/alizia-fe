@@ -15,14 +15,14 @@ export default function Home() {
 
   return (
     <div className="app-container" id="app-container">
-      {/* Google Gemini Style Sidebar */}
+      {/* On-Demand Slide-over History & Settings Drawer (0px space when closed) */}
       <Sidebar />
 
-      {/* Main Content Area */}
-      <main className="main-wrapper">
-        <Header />
+      {/* Edge-to-Edge Header */}
+      <Header />
 
-        {/* Dynamic Views */}
+      {/* Main Content Area - 100% Full Width Edge-to-Edge */}
+      <main className="flex-1 w-full h-[calc(100vh-64px)] overflow-hidden flex flex-col relative">
         {activeView === 'chat' && <ChatView />}
         {activeView === 'agents' && <AgentStudio />}
         {activeView === 'rag' && <RagLab />}

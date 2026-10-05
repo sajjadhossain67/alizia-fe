@@ -21,7 +21,7 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_SETTINGS: Settings = {
-  backendUrl: 'http://localhost:8000',
+  backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000',
   activeModel: 'alizia-nova',
   reasoningEffort: 'high',
   theme: 'dark',
@@ -42,7 +42,9 @@ interface AppContextType {
   activeView: ViewMode;
   setActiveView: (view: ViewMode) => void;
   
+  sidebarOpen: boolean;
   sidebarCollapsed: boolean;
+  setSidebarOpen: (open: boolean) => void;
   toggleSidebar: () => void;
   
   settings: Settings;
@@ -82,7 +84,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<ViewMode>('chat');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -194,7 +196,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const toggleSidebar = useCallback(() => {
-    setSidebarCollapsed(prev => !prev);
+    setSidebarOpen(prev => !prev);
   }, []);
 
   const toggleDictation = useCallback(() => {
@@ -444,7 +446,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateConversationTitle,
         activeView,
         setActiveView,
-        sidebarCollapsed,
+        sidebarOpen,
+        sidebarCollapsed: !sidebarOpen,
+        setSidebarOpen,
         toggleSidebar,
         settings,
         updateSettings,

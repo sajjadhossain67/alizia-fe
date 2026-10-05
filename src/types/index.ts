@@ -97,7 +97,7 @@ export interface Conversation {
   messages: Message[];
 }
 
-export type ThemeMode = 'dark' | 'light' | 'cyber';
+export type ThemeMode = 'dark' | 'light' | 'amoled' | 'sepia' | 'high-contrast' | 'cyber';
 export type ReasoningEffort = 'high' | 'medium' | 'low';
 export type ViewMode = 'chat' | 'agents' | 'rag';
 

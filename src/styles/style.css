@@ -115,9 +115,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* App Container */
+/* App Container - Edge-to-Edge Full Width */
 .app-container {
   display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
   position: relative;

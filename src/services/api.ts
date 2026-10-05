@@ -34,7 +34,7 @@ export const ALIZIA_MODELS: ModelOption[] = [
 export class AliziaApiClient {
   private baseUrl: string;
 
-  constructor(baseUrl: string = 'http://localhost:8000') {
+  constructor(baseUrl: string = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000') {
     this.baseUrl = baseUrl.replace(/\/$/, '');
   }
 
