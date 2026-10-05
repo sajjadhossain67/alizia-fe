@@ -5,8 +5,8 @@ import { Message } from '../../types';
 import { MarkdownRenderer } from '../MarkdownRenderer';
 import { useApp } from '../../context/AppContext';
 import { speechService } from '../../services/speech';
-import { Sparkles, ChevronDown, Copy, Volume2, ThumbsUp, Check, ShieldCheck, Share2 } from 'lucide-react';
-import { AliziaSparkle } from '../ui/AliziaSparkle';
+import { Sparkles, ChevronDown, Copy, Volume2, ThumbsUp, Check, ShieldCheck } from 'lucide-react';
+import Image from 'next/image';
 
 export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
   const { showToast, setActiveProof } = useApp();
@@ -32,19 +32,16 @@ export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
 
   if (isUser) {
     return (
-      <div className="w-full flex justify-end px-2 sm:px-4 py-2 animate-in fade-in duration-200">
-        <div className="max-w-[85%] md:max-w-xl flex flex-col items-end gap-1.5">
+      <div className="chat-message-row user-row">
+        <div className="message-bubble-wrapper">
           {message.attachments && message.attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-1 justify-end">
+            <div className="flex flex-wrap gap-2 mb-2">
               {message.attachments.map((att) => (
-                <div
-                  key={att.id}
-                  className="rounded-2xl overflow-hidden border border-transparent shadow-xs max-w-xs max-h-48"
-                >
+                <div key={att.id} className="message-media-attachment">
                   {att.type.startsWith('image/') ? (
                     <img src={att.dataUrl} alt={att.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="p-3 bg-[var(--color-surface-container)] text-xs text-[var(--color-on-surface-variant)]">
+                    <div className="p-3 bg-[var(--bg-tertiary)] text-xs text-[var(--text-secondary)]">
                       {att.name}
                     </div>
                   )}
@@ -52,9 +49,7 @@ export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
               ))}
             </div>
           )}
-          <div className="px-5 py-3.5 rounded-[22px] rounded-br-sm bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] text-[15px] leading-relaxed break-words shadow-xs">
-            {message.content}
-          </div>
+          <div className="user-bubble">{message.content}</div>
         </div>
       </div>
     );
@@ -67,114 +62,96 @@ export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
   );
 
   return (
-    <div className="w-full flex items-start gap-4 px-4 py-4 max-w-4xl mx-auto animate-in fade-in duration-200">
-      {/* Alizia Sparkle Avatar */}
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4285F4]/20 via-[#9B72CB]/20 to-[#D96570]/20 border border-[var(--color-outline)] flex items-center justify-center shrink-0 shadow-xs mt-1">
-        <AliziaSparkle size={18} thinking={message.isLive} animate={message.isLive} />
+    <div className="chat-message-row assistant-row">
+      <div className="message-avatar alizia-avatar">
+        <Image
+          src="/assets/alizia-logo.png"
+          alt="Alizia AI"
+          width={24}
+          height={24}
+          className="object-contain"
+        />
       </div>
 
-      <div className="flex-1 flex flex-col gap-2 min-w-0">
-        {/* Model Header */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-[var(--color-on-surface)]">Alizia AI</span>
-          <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-[var(--color-surface-container)] text-[var(--color-on-surface-muted)] border border-[var(--color-outline)]">
-            {message.model || 'Alizia Nova 1.5'}
-          </span>
-          {message.isLive && (
-            <span className="flex items-center gap-1 text-[11px] text-[var(--accent)] font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-ping" />
-              Thinking...
-            </span>
-          )}
+      <div className="message-bubble-wrapper">
+        <div className="assistant-header">
+          <span className="assistant-name">Alizia AI</span>
+          <span className="assistant-model-tag">{message.model || 'Alizia Nova 1.0'}</span>
         </div>
 
-        {/* Expandable Thinking Accordion */}
+        {/* Expandable Thinking Process Accordion */}
         {hasThinking && (
-          <div className="w-full rounded-[var(--radius-lg)] border border-[var(--color-outline)] bg-[var(--color-surface-container)]/60 overflow-hidden text-xs">
-            <button
-              type="button"
+          <div className={`thinking-accordion ${thinkingOpen ? 'open' : ''}`}>
+            <div
+              className="thinking-header cursor-pointer select-none"
               onClick={() => setThinkingOpen(!thinkingOpen)}
-              className="w-full flex items-center justify-between px-3.5 py-2 hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer select-none text-left"
             >
-              <div className="flex items-center gap-2 text-[var(--color-on-surface-muted)]">
-                <Sparkles size={14} className="text-[#9B72CB]" />
-                <span className="font-medium text-[var(--color-on-surface-variant)]">Thinking Process</span>
-              </div>
+              <Sparkles size={16} className="thinking-sparkle" />
+              <span className="thinking-title">Thinking process</span>
               <ChevronDown
                 size={14}
-                className={`text-[var(--color-on-surface-muted)] transition-transform duration-200 ${
-                  thinkingOpen ? 'rotate-180' : ''
-                }`}
+                className={`thinking-chevron transition-transform duration-200 ${thinkingOpen ? 'rotate-180' : ''}`}
               />
-            </button>
+            </div>
             {thinkingOpen && (
-              <div className="px-3.5 pb-3 pt-1 text-[11px] font-mono text-[var(--color-on-surface-muted)] leading-relaxed whitespace-pre-wrap border-t border-[var(--color-outline)]/50">
+              <div className="thinking-content whitespace-pre-wrap font-mono text-xs text-[var(--text-secondary)] bg-[var(--bg-tertiary)]/40 p-3.5 rounded-xl border border-[var(--border-subtle)] mt-2">
                 {message.thinking}
               </div>
             )}
           </div>
         )}
 
-        {/* Message Body */}
-        <div className="text-sm md:text-base leading-relaxed text-[var(--color-on-surface)] break-words">
+        {/* Message Markdown Body */}
+        <div className="message-body">
           <MarkdownRenderer content={message.content} isLive={message.isLive} />
         </div>
 
         {/* Actions Toolbar */}
         {!message.isLive && message.content && (
-          <div className="flex flex-wrap items-center gap-2 mt-2 pt-1">
-            {/* Show Proof Button */}
+          <div className="message-actions-toolbar flex items-center gap-2 mt-2">
             {message.proof && (
               <button
+                className="flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 transition-all shadow-sm shadow-emerald-500/10 mr-1"
                 onClick={() => setActiveProof(message.proof)}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/30 transition-all cursor-pointer shadow-xs shadow-emerald-500/10 mr-1"
-                title="Inspect Atomic Claims, Citations & Sandbox Verifications"
+                title="Inspect atomic claim decomposition, source spans, and sandbox tests"
               >
-                <ShieldCheck size={14} className="text-emerald-400" />
+                <ShieldCheck size={13} className="text-emerald-400" />
                 <span>Show Proof</span>
-                <span className="text-[10px] font-mono px-1 rounded bg-emerald-500/20 text-emerald-300 uppercase">
+                <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-mono text-emerald-300 uppercase">
                   {message.proof.verifier_verdict} {(message.proof.confidence * 100).toFixed(0)}%
                 </span>
               </button>
             )}
 
-            {/* Copy Button */}
             <button
+              className="msg-action-btn copy-msg-btn"
               onClick={handleCopy}
-              className="p-1.5 rounded-full text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
-              title="Copy message"
-              aria-label="Copy message"
+              title="Copy response"
             >
               {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
             </button>
 
-            {/* Read Aloud Button */}
             <button
+              className={`msg-action-btn speak-msg-btn ${isSpeaking ? 'active' : ''}`}
               onClick={handleSpeak}
-              className={`p-1.5 rounded-full transition-colors cursor-pointer ${
-                isSpeaking
-                  ? 'text-[var(--accent)] bg-[var(--accent-subtle)]'
-                  : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
-              }`}
-              title={isSpeaking ? 'Stop speaking' : 'Read aloud'}
-              aria-label="Read aloud"
+              title={isSpeaking ? 'Stop reading' : 'Read aloud'}
             >
-              <Volume2 size={14} />
+              {isSpeaking ? (
+                <span className="voice-wave-container">
+                  <span className="voice-wave-bar" />
+                  <span className="voice-wave-bar" />
+                  <span className="voice-wave-bar" />
+                  <span className="voice-wave-bar" />
+                </span>
+              ) : (
+                <Volume2 size={14} />
+              )}
             </button>
 
-            {/* Thumbs Up Button */}
             <button
-              onClick={() => {
-                setLiked(!liked);
-                showToast(liked ? 'Feedback removed' : 'Thank you for your feedback!');
-              }}
-              className={`p-1.5 rounded-full transition-colors cursor-pointer ${
-                liked
-                  ? 'text-[#4285F4] bg-blue-500/15'
-                  : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
-              }`}
-              title="Good response"
-              aria-label="Thumbs up"
+              className={`msg-action-btn thumbs-up-btn ${liked ? 'active text-indigo-400' : ''}`}
+              onClick={() => setLiked(!liked)}
+              title="Helpful response"
             >
               <ThumbsUp size={14} />
             </button>

@@ -24,6 +24,7 @@ export const InputDock: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Sync speech dictation transcript into input
   useEffect(() => {
     if (currentTranscript) {
       setInputVal(currentTranscript);
@@ -34,7 +35,7 @@ export const InputDock: React.FC = () => {
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 220)}px`;
     }
   };
 
@@ -77,7 +78,7 @@ export const InputDock: React.FC = () => {
           name: file.name,
           type: file.type,
           size: file.size,
-          dataUrl: event.target?.result as string,
+          dataUrl: event.target?.result as string
         };
         addAttachment(att);
       };
@@ -95,126 +96,104 @@ export const InputDock: React.FC = () => {
   const hasContent = inputVal.trim().length > 0 || attachments.length > 0;
 
   return (
-    <div className="w-full max-w-[820px] mx-auto px-4 pb-8 pt-2 select-none shrink-0">
-      {/* Signature Gemini Capsule Container */}
-      <div className="w-full rounded-[28px] bg-[var(--color-surface-container)] hover:bg-[#232426] focus-within:bg-[var(--color-surface-container)] transition-all duration-200 p-3.5 sm:p-4 flex flex-col gap-2 shadow-lg border border-white/[0.04]">
-        {/* Attachment Previews */}
-        {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-2 pt-1 pb-1">
-            {attachments.map((att, idx) => (
-              <div
-                key={att.id}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-surface)] text-xs text-[var(--color-on-surface)]"
+    <div className="input-dock-container">
+      <div className="input-dock-inner">
+        <div className="input-dock">
+          {/* Attached Previews */}
+          {attachments.length > 0 && (
+            <div className="attached-previews-container has-files">
+              {attachments.map((att, idx) => (
+                <div key={att.id} className="preview-chip">
+                  {att.type.startsWith('image/') ? (
+                    <img src={att.dataUrl} className="preview-thumb" alt={att.name} />
+                  ) : (
+                    <FileText size={16} className="text-[var(--accent-cyan)]" />
+                  )}
+                  <span className="truncate max-w-[120px]">{att.name}</span>
+                  <button
+                    className="preview-remove-btn"
+                    onClick={() => removeAttachment(idx)}
+                    title="Remove file"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Input Row */}
+          <div className="input-row">
+            <div className="dock-left-actions">
+              <button
+                className="icon-btn"
+                onClick={() => fileInputRef.current?.click()}
+                title="Add files or image for Vision analysis"
               >
-                {att.type.startsWith('image/') ? (
-                  <img src={att.dataUrl} className="w-4 h-4 rounded-full object-cover" alt={att.name} />
-                ) : (
-                  <FileText size={13} className="text-[var(--accent)]" />
-                )}
-                <span className="truncate max-w-[140px] font-medium text-[12px]">{att.name}</span>
-                <button
-                  onClick={() => removeAttachment(idx)}
-                  className="p-0.5 rounded-full hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface-muted)] cursor-pointer"
-                  title="Remove"
-                >
-                  <X size={12} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+                <Plus size={20} />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/*,.txt,.py,.js,.ts,.json,.md,.csv"
+                multiple
+                onChange={handleFileUpload}
+              />
+            </div>
 
-        {/* Textarea */}
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          value={inputVal}
-          onChange={handleTextChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask Alizia"
-          className="w-full bg-transparent border-none text-[16px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-muted)] focus:outline-none resize-none px-3 pt-1 pb-1 leading-relaxed custom-scrollbar min-h-[44px] max-h-48"
-        />
-
-        {/* Bottom Actions Row inside the capsule */}
-        <div className="flex items-center justify-between px-1 pt-1">
-          {/* Left: Upload Button & Proof Mode */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
-              title="Add image or document"
-              aria-label="Add file"
-            >
-              <Plus size={20} strokeWidth={2} />
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              accept="image/*,.txt,.py,.js,.ts,.json,.md,.csv"
-              multiple
-              onChange={handleFileUpload}
+            <textarea
+              ref={textareaRef}
+              className="dock-textarea"
+              placeholder="Ask Alizia anything..."
+              rows={1}
+              value={inputVal}
+              onChange={handleTextChange}
+              onKeyDown={handleKeyDown}
             />
 
-            {/* Proof Mode Toggle Pill */}
-            <button
-              type="button"
-              onClick={() => setProofMode(!proofMode)}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                proofMode
-                  ? 'bg-[var(--color-surface-hover)] text-[#8ab4f8]'
-                  : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
-              }`}
-              title={proofMode ? 'Proof Mode ON' : 'Proof Mode OFF'}
-            >
-              <ShieldCheck size={14} className={proofMode ? 'text-[#8ab4f8]' : 'text-current'} />
-              <span>Proof</span>
-            </button>
-          </div>
+            <div className="dock-right-actions flex items-center gap-1.5">
+              <button
+                type="button"
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                  proofMode
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/10'
+                    : 'text-white/40 hover:text-white/70 hover:bg-white/5 border border-white/5'
+                }`}
+                onClick={() => setProofMode(!proofMode)}
+                title={proofMode ? 'Proof Mode ON: Verifiable claim grounding & sandbox assertions active' : 'Click to enable Proof Mode'}
+              >
+                <ShieldCheck size={14} className={proofMode ? 'text-emerald-400' : 'text-white/40'} />
+                <span className="hidden sm:inline">Proof</span>
+              </button>
 
-          {/* Right: Mic & Send */}
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={toggleDictation}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                isDictating
-                  ? 'bg-red-500/20 text-red-400 animate-pulse'
-                  : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
-              }`}
-              title={isDictating ? 'Stop dictation' : 'Voice input'}
-              aria-label="Voice input"
-            >
-              <Mic size={18} />
-            </button>
+              <button
+                className={`icon-btn mic-btn ${isDictating ? 'listening' : ''}`}
+                onClick={toggleDictation}
+                title={isDictating ? 'Stop listening' : 'Dictate with voice'}
+              >
+                <Mic size={20} />
+              </button>
 
-            <button
-              onClick={handleSubmit}
-              disabled={!hasContent && !isGenerating}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                isGenerating
-                  ? 'bg-red-500 hover:bg-red-600 text-white cursor-pointer active:scale-95 shadow-sm'
-                  : hasContent
-                  ? 'bg-white text-[#131314] hover:bg-[#f0f4f9] cursor-pointer active:scale-95 shadow-sm'
-                  : 'text-[var(--color-on-surface-disabled)] opacity-30 cursor-not-allowed'
-              }`}
-              title={isGenerating ? 'Stop generating' : 'Send message'}
-              aria-label={isGenerating ? 'Stop generating' : 'Send message'}
-            >
-              {isGenerating ? (
-                <Square size={12} className="fill-current" />
-              ) : (
-                <ArrowUp size={18} strokeWidth={2.5} />
-              )}
-            </button>
+              <button
+                className={`send-btn ${hasContent || isGenerating ? 'ready' : ''} ${isGenerating ? 'generating' : ''}`}
+                onClick={handleSubmit}
+                title={isGenerating ? 'Stop generating' : 'Send message'}
+              >
+                {isGenerating ? (
+                  <Square size={14} className="fill-current" />
+                ) : (
+                  <ArrowUp size={18} />
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Gemini Minimal Disclaimer */}
-      <p className="text-[12px] text-center text-[var(--color-on-surface-muted)] mt-2.5 font-normal">
-        Alizia can make mistakes, so double-check it
-      </p>
+        <div className="dock-disclaimer">
+          Alizia can make mistakes. Verify important info.
+        </div>
+      </div>
     </div>
   );
 };
-

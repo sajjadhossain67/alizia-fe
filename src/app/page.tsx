@@ -14,15 +14,15 @@ export default function Home() {
   const { activeView } = useApp();
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-[var(--color-background)] text-[var(--color-on-surface)] overflow-hidden relative" id="app-container">
-      {/* Google Gemini Slide-over Drawer */}
+    <div className="app-container" id="app-container">
+      {/* Google Gemini Style Sidebar */}
       <Sidebar />
 
-      {/* Edge-to-Edge Header */}
-      <Header />
+      {/* Main Content Area */}
+      <main className="main-wrapper">
+        <Header />
 
-      {/* Main Canvas Area - 100% Edge-to-Edge */}
-      <main className="flex-1 w-full h-[calc(100vh-64px)] overflow-hidden flex flex-col relative">
+        {/* Dynamic Views */}
         {activeView === 'chat' && <ChatView />}
         {activeView === 'agents' && <AgentStudio />}
         {activeView === 'rag' && <RagLab />}
@@ -34,4 +34,3 @@ export default function Home() {
     </div>
   );
 }
-

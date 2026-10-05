@@ -2,64 +2,53 @@
 
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import {
-  Compass,
-  Lightbulb,
-  Code2,
-  ShieldCheck,
-} from 'lucide-react';
+import { ChevronRight, Cpu, ShieldCheck, Palette, Database } from 'lucide-react';
 
 const SUGGESTIONS = [
   {
-    text: 'Analyze distributed consensus protocols and formal verification invariants',
-    icon: Compass,
+    tag: 'Architecture',
+    text: 'Analyze system concurrency bottlenecks and distributed locking strategies.',
+    icon: Cpu
   },
   {
-    text: 'Generate a verifiable proof decomposing claims with arXiv grounded citations',
-    icon: ShieldCheck,
+    tag: 'Verifiable AI',
+    text: 'Run a verifiable agent to inspect code and generate formal execution proofs.',
+    icon: ShieldCheck
   },
   {
-    text: 'Write a resilient TypeScript hook for streaming SSE tokens with backpressure',
-    icon: Code2,
+    tag: 'Design System',
+    text: 'Synthesize high-performance reactive UI patterns with glassmorphism.',
+    icon: Palette
   },
   {
-    text: 'Design a minimalist, calm interface with generous whitespace and tonal surfaces',
-    icon: Lightbulb,
-  },
+    tag: 'Knowledge Engine',
+    text: 'Inspect multi-tier memory architecture and pgvector hybrid search.',
+    icon: Database
+  }
 ];
 
 export const WelcomeHero: React.FC = () => {
   const { sendMessage } = useApp();
 
   return (
-    <div className="w-full max-w-[820px] mx-auto flex flex-col items-start select-none animate-in fade-in duration-300">
-      {/* Gemini Signature Gradient Greeting */}
-      <div className="mb-8 sm:mb-10 text-left">
-        <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-medium tracking-tight bg-gradient-to-r from-[#4285F4] via-[#9B72CB] to-[#D96570] bg-clip-text text-transparent leading-[1.12]">
-          Hello, Developer
-        </h1>
-        <h2 className="text-4xl sm:text-5xl lg:text-[56px] font-medium tracking-tight text-[#444746] dark:text-[#444746] leading-[1.12] mt-1.5">
-          How can I help you today?
-        </h2>
-      </div>
+    <div className="welcome-hero">
+      <h1 className="welcome-greeting">Hello, Developer</h1>
+      <h2 className="welcome-sub">How can Alizia help you today?</h2>
 
-      {/* 4 Clean Gemini Suggestion Cards */}
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+      <div className="suggestion-grid">
         {SUGGESTIONS.map((item, idx) => {
-          const Icon = item.icon;
+          const IconComponent = item.icon;
           return (
             <div
               key={idx}
+              className="suggestion-card"
               onClick={() => sendMessage(item.text)}
-              className="group h-[145px] p-4 rounded-2xl bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-hover)] transition-all duration-200 cursor-pointer flex flex-col justify-between border border-transparent hover:border-white/[0.06] select-none"
             >
-              <p className="text-[13.5px] text-[var(--color-on-surface-variant)] group-hover:text-[var(--color-on-surface)] leading-relaxed font-normal line-clamp-3 transition-colors">
-                {item.text}
-              </p>
-
-              <div className="flex justify-end pt-1">
-                <div className="w-9 h-9 rounded-full bg-[var(--color-background)] flex items-center justify-center text-[var(--color-on-surface-muted)] group-hover:text-[var(--color-on-surface)] transition-all">
-                  <Icon size={17} strokeWidth={1.8} />
+              <div className="suggestion-text">{item.text}</div>
+              <div className="suggestion-footer">
+                <span className="suggestion-tag">{item.tag}</span>
+                <div className="suggestion-icon-circle">
+                  <IconComponent size={14} />
                 </div>
               </div>
             </div>
@@ -69,4 +58,3 @@ export const WelcomeHero: React.FC = () => {
     </div>
   );
 };
-

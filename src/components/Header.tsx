@@ -3,32 +3,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALIZIA_MODELS } from '../services/api';
-import {
-  Menu,
-  ChevronDown,
-  Moon,
-  Sun,
-  ShieldCheck,
-  Check,
-} from 'lucide-react';
-import Link from 'next/link';
+import { ChevronDown, Moon, Sun, Monitor, Check } from 'lucide-react';
+import Image from 'next/image';
 
 export const Header: React.FC = () => {
-  const {
-    settings,
-    updateSettings,
-    showToast,
-    sidebarOpen,
-    toggleSidebar,
-    proofMode,
-    setProofMode,
-  } = useApp();
-
+  const { settings, updateSettings, showToast } = useApp();
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const activeModel = ALIZIA_MODELS.find((m) => m.id === settings.activeModel) || ALIZIA_MODELS[0];
+  const activeModel = ALIZIA_MODELS.find(m => m.id === settings.activeModel) || ALIZIA_MODELS[0];
 
+  // Close dropdown on outside click
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -46,125 +31,86 @@ export const Header: React.FC = () => {
   };
 
   const handleToggleTheme = () => {
-    const themeSequence = ['dark', 'light', 'amoled', 'sepia', 'high-contrast'] as const;
     const current = settings.theme || 'dark';
-    const nextIdx = (themeSequence.indexOf(current as any) + 1) % themeSequence.length;
-    const next = themeSequence[nextIdx];
+    const next = current === 'dark' ? 'light' : current === 'light' ? 'cyber' : 'dark';
     updateSettings({ theme: next });
     showToast(`Switched theme to ${next.toUpperCase()}`);
   };
 
   return (
-    <header className="w-full h-16 px-4 md:px-6 flex items-center justify-between select-none z-30 shrink-0">
-      {/* Left: Hamburger menu + Brand Logo + Model picker */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={toggleSidebar}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
-          title="Main menu"
-          aria-label="Main menu"
-        >
-          <Menu size={20} />
-        </button>
-
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 text-[20px] font-medium tracking-tight text-[var(--color-on-surface)] hover:opacity-90 transition-opacity"
-        >
-          <img
-            src="/assets/alizia-logo.png"
-            alt="Alizia AI"
-            className="w-6 h-6 object-contain"
-          />
-          <span>Alizia</span>
-        </Link>
-
-        {/* Clean Gemini Model Dropdown Pill */}
-        <div className="relative ml-1" ref={dropdownRef}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setModelDropdownOpen((prev) => !prev);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-hover)] text-xs font-normal text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-all cursor-pointer"
-            aria-haspopup="listbox"
-            aria-expanded={modelDropdownOpen}
-          >
-            <span>{activeModel.name}</span>
-            <ChevronDown
-              size={14}
-              className={`text-[var(--color-on-surface-muted)] transition-transform duration-200 ${
-                modelDropdownOpen ? 'rotate-180' : ''
-              }`}
+    <header className="top-header">
+      <div className="header-left">
+        <div className="brand-badge">
+          <div className="relative w-7 h-7 shrink-0">
+            <Image
+              src="/assets/alizia-logo.png"
+              alt="Alizia AI Logo"
+              width={28}
+              height={28}
+              className="brand-logo-img object-contain"
+              priority
+              onError={(e) => {
+                // Fallback if image fails to load
+                (e.target as HTMLElement).style.display = 'none';
+              }}
             />
-          </button>
-
-            {modelDropdownOpen && (
-              <div className="absolute top-[calc(100%+8px)] left-0 w-72 rounded-2xl p-2 bg-[var(--color-surface-container)] border border-[var(--color-outline)] shadow-[var(--shadow-floating)] z-50 animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1">
-                {ALIZIA_MODELS.map((model) => {
-                  const isSelected = model.id === settings.activeModel;
-                  return (
-                    <button
-                      key={model.id}
-                      onClick={() => handleSelectModel(model.id, model.name)}
-                      className={`flex flex-col gap-0.5 p-3 rounded-xl text-left transition-colors cursor-pointer ${
-                        isSelected
-                          ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
-                          : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-xs font-medium">{model.name}</span>
-                        {isSelected && <Check size={14} className="text-[#8ab4f8]" />}
-                      </div>
-                      <span className="text-[11px] text-[var(--color-on-surface-muted)] leading-tight">
-                        {model.description}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </div>
+          <span className="brand-name">Alizia</span>
         </div>
 
-      {/* Right: Proof Mode toggle + Theme button + User Avatar */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => {
-            const next = !proofMode;
-            setProofMode(next);
-            showToast(next ? 'Proof Mode ON' : 'Proof Mode OFF');
-          }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
-            proofMode
-              ? 'bg-[var(--color-surface-container)] text-[#8ab4f8] hover:bg-[var(--color-surface-hover)]'
-              : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)]'
-          }`}
-          title="Verifiable Proof Mode"
-        >
-          <ShieldCheck size={15} className={proofMode ? 'text-[#8ab4f8]' : 'text-current'} />
-          <span className="hidden sm:inline">Proof Mode</span>
-        </button>
+        {/* Model Switcher (Gemini Style) */}
+        <div className={`model-selector-dropdown relative ${modelDropdownOpen ? 'open' : ''}`} ref={dropdownRef}>
+          <button
+            className="model-selector-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setModelDropdownOpen(prev => !prev);
+            }}
+          >
+            <span>{activeModel.name}</span>
+            <ChevronDown size={16} className={`transition-transform duration-200 ${modelDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
 
+          {modelDropdownOpen && (
+            <div className="model-dropdown-menu">
+              {ALIZIA_MODELS.map((model) => (
+                <button
+                  key={model.id}
+                  className={`model-option ${model.id === settings.activeModel ? 'active' : ''}`}
+                  onClick={() => handleSelectModel(model.id, model.name)}
+                >
+                  <div className="model-option-header">
+                    <span className="model-option-name">{model.name}</span>
+                    <span className="model-context-tag">{model.context}</span>
+                  </div>
+                  <div className="model-option-desc">{model.description}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="header-right">
         <button
+          className="header-action-btn"
           onClick={handleToggleTheme}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
-          title={`Theme: ${settings.theme}`}
-          aria-label="Toggle theme"
+          title={`Current theme: ${settings.theme}. Click to switch.`}
         >
-          {settings.theme === 'light' ? <Sun size={18} /> : <Moon size={18} />}
+          {settings.theme === 'dark' ? (
+            <Moon size={16} />
+          ) : settings.theme === 'light' ? (
+            <Sun size={16} />
+          ) : (
+            <Monitor size={16} />
+          )}
+          <span className="capitalize">{settings.theme}</span>
         </button>
 
-        {/* User Account Avatar */}
-        <div
-          className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#4285F4] to-[#9B72CB] text-white font-medium text-xs flex items-center justify-center cursor-pointer select-none ml-1"
-          title="User Account"
-        >
-          S
+        <div className="user-avatar-btn" title="User Profile">
+          A
         </div>
       </div>
     </header>
   );
 };
-
