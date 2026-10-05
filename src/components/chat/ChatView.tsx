@@ -27,7 +27,7 @@ export const ChatView: React.FC = () => {
         ref={scrollAreaRef}
         className="flex-1 w-full overflow-y-auto px-2 md:px-6 py-2 scroll-smooth custom-scrollbar flex flex-col items-center"
       >
-        <div className={`w-full max-w-[830px] flex-1 flex flex-col ${messages.length === 0 ? 'justify-center' : 'justify-start'}`}>
+        <div className={`w-full max-w-[820px] flex-1 flex flex-col ${messages.length === 0 ? 'justify-center' : 'justify-start'}`}>
           {messages.length === 0 ? (
             <WelcomeHero />
           ) : (

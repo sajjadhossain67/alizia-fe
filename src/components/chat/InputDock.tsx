@@ -95,9 +95,9 @@ export const InputDock: React.FC = () => {
   const hasContent = inputVal.trim().length > 0 || attachments.length > 0;
 
   return (
-    <div className="w-full max-w-[830px] mx-auto px-4 pb-6 pt-1 select-none shrink-0">
+    <div className="w-full max-w-[820px] mx-auto px-4 pb-8 pt-2 select-none shrink-0">
       {/* Signature Gemini Capsule Container */}
-      <div className="w-full rounded-[28px] bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-container-high)] focus-within:bg-[var(--color-surface-container)] transition-all duration-200 p-3 sm:p-3.5 flex flex-col gap-1.5 shadow-sm">
+      <div className="w-full rounded-[28px] bg-[var(--color-surface-container)] hover:bg-[#232426] focus-within:bg-[var(--color-surface-container)] transition-all duration-200 p-3.5 sm:p-4 flex flex-col gap-2 shadow-lg border border-white/[0.04]">
         {/* Attachment Previews */}
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-2 px-2 pt-1 pb-1">
@@ -132,7 +132,7 @@ export const InputDock: React.FC = () => {
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
           placeholder="Ask Alizia"
-          className="w-full bg-transparent border-none text-[16px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-muted)] focus:outline-none resize-none px-3 pt-1 pb-1 leading-relaxed custom-scrollbar max-h-48"
+          className="w-full bg-transparent border-none text-[16px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-muted)] focus:outline-none resize-none px-3 pt-1 pb-1 leading-relaxed custom-scrollbar min-h-[44px] max-h-48"
         />
 
         {/* Bottom Actions Row inside the capsule */}

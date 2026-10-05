@@ -3,14 +3,12 @@
 import React, { useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import {
-  X,
   Plus,
   MessageSquare,
   Bot,
   Database,
   Trash2,
   Settings,
-  Sparkles,
   Layers,
   Menu,
 } from 'lucide-react';
@@ -43,62 +41,54 @@ export const Sidebar: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sidebarOpen, setSidebarOpen]);
 
+  if (!sidebarOpen) return null;
+
   return (
     <>
-      {/* Mobile Backdrop (only visible on mobile screens < md when open) */}
+      {/* Soft Backdrop */}
       <div
-        className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity duration-300 md:hidden ${
-          sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
+        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs transition-opacity duration-200"
         onClick={() => setSidebarOpen(false)}
         aria-hidden="true"
       />
 
-      {/* Sidebar Panel: Docked on Desktop, Slide-over on Mobile */}
+      {/* Gemini Slide-over Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 md:relative md:z-20 h-full bg-[var(--color-surface-container)] flex flex-col justify-between select-none transition-all duration-300 ease-in-out ${
-          sidebarOpen
-            ? 'w-[270px] translate-x-0 opacity-100'
-            : '-translate-x-full md:translate-x-0 md:w-0 opacity-0 pointer-events-none'
-        } overflow-hidden`}
+        className="fixed inset-y-0 left-0 z-50 w-72 sm:w-80 h-full bg-[var(--color-surface-container)] shadow-2xl flex flex-col justify-between select-none animate-in slide-in-from-left duration-250 border-r border-[var(--color-outline)]"
         role="navigation"
         aria-label="Main Navigation & History"
       >
-        <div className="w-[270px] flex flex-col h-full">
-          {/* Top Header: Hamburger Collapse + Brand */}
-          <div className="h-16 px-4 flex items-center justify-between shrink-0">
+        <div className="flex flex-col h-full">
+          {/* Top Header: Hamburger + Official Brand Logo */}
+          <div className="h-16 px-4 flex items-center gap-3 shrink-0">
             <button
               onClick={toggleSidebar}
               className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
-              title="Collapse menu"
-              aria-label="Collapse menu"
+              title="Close menu"
+              aria-label="Close menu"
             >
               <Menu size={20} />
             </button>
 
-            <div className="flex items-center gap-2">
-              <span className="text-[19px] font-medium tracking-normal text-[var(--color-on-surface)]">
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/assets/alizia-logo.png"
+                alt="Alizia AI"
+                className="w-6 h-6 object-contain"
+              />
+              <span className="text-[19px] font-medium tracking-tight text-[var(--color-on-surface)]">
                 Alizia
               </span>
             </div>
-
-            {/* Mobile close button */}
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
-              aria-label="Close sidebar"
-            >
-              <X size={18} />
-            </button>
           </div>
 
-          {/* New Chat Button */}
+          {/* New Chat Button (Iconic Gemini Pill) */}
           <div className="px-4 py-2 shrink-0">
             <button
-              className="w-full flex items-center gap-3 py-2.5 px-4 rounded-full bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] active:scale-[0.98] font-medium text-[14px] shadow-xs transition-all cursor-pointer"
+              className="w-full flex items-center gap-3 py-3 px-4 rounded-full bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] active:scale-[0.98] font-medium text-[14px] shadow-xs transition-all cursor-pointer border border-[var(--color-outline)]"
               onClick={() => {
                 createConversation();
-                if (window.innerWidth < 768) setSidebarOpen(false);
+                setSidebarOpen(false);
               }}
             >
               <Plus size={18} className="text-[#8ab4f8]" />
@@ -109,58 +99,56 @@ export const Sidebar: React.FC = () => {
           {/* Workspaces / Navigation Section */}
           <div className="px-3 py-2 flex flex-col gap-0.5 shrink-0">
             <button
-              className={`flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
+              className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
                 activeView === 'chat'
                   ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
                   : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
               }`}
               onClick={() => {
                 setActiveView('chat');
-                if (window.innerWidth < 768) setSidebarOpen(false);
+                setSidebarOpen(false);
               }}
             >
-              <MessageSquare size={17} className="opacity-70" />
+              <MessageSquare size={17} className="opacity-70 text-[#8ab4f8]" />
               <span>Chat</span>
             </button>
 
             <button
-              className={`flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
+              className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
                 activeView === 'agents'
                   ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
                   : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
               }`}
               onClick={() => {
                 setActiveView('agents');
-                if (window.innerWidth < 768) setSidebarOpen(false);
+                setSidebarOpen(false);
               }}
             >
-              <Bot size={17} className="opacity-70" />
+              <Bot size={17} className="opacity-70 text-[#c084fc]" />
               <span>Agents Studio</span>
             </button>
 
             <button
-              className={`flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
+              className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
                 activeView === 'rag'
                   ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
                   : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
               }`}
               onClick={() => {
                 setActiveView('rag');
-                if (window.innerWidth < 768) setSidebarOpen(false);
+                setSidebarOpen(false);
               }}
             >
-              <Database size={17} className="opacity-70" />
+              <Database size={17} className="opacity-70 text-[#38bdf8]" />
               <span>Knowledge Base</span>
             </button>
 
             <Link
               href="/design-system"
-              className="flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
-              onClick={() => {
-                if (window.innerWidth < 768) setSidebarOpen(false);
-              }}
+              className="flex items-center gap-3 w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
+              onClick={() => setSidebarOpen(false)}
             >
-              <Layers size={17} className="opacity-70" />
+              <Layers size={17} className="opacity-70 text-[#f472b6]" />
               <span>Design System</span>
             </Link>
           </div>
@@ -182,7 +170,7 @@ export const Sidebar: React.FC = () => {
                     key={convo.id}
                     onClick={() => {
                       selectConversation(convo.id);
-                      if (window.innerWidth < 768) setSidebarOpen(false);
+                      setSidebarOpen(false);
                     }}
                     className={`group flex items-center justify-between w-full px-4 py-2 rounded-full text-[13px] transition-colors cursor-pointer ${
                       isActive
@@ -190,16 +178,13 @@ export const Sidebar: React.FC = () => {
                         : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] hover:text-[var(--color-on-surface)]'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 truncate">
-                      <MessageSquare size={14} className="shrink-0 opacity-50" />
-                      <span className="truncate">{convo.title || 'New conversation'}</span>
-                    </div>
+                    <span className="truncate pr-2">{convo.title || 'New conversation'}</span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteConversation(convo.id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-[var(--color-on-surface-muted)] hover:text-[var(--danger)] rounded-full transition-opacity cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-[var(--color-on-surface-muted)] hover:text-[var(--danger)] rounded-full transition-opacity cursor-pointer shrink-0"
                       title="Delete conversation"
                     >
                       <Trash2 size={13} />
@@ -220,7 +205,7 @@ export const Sidebar: React.FC = () => {
             <button
               onClick={() => {
                 setIsSettingsOpen(true);
-                if (window.innerWidth < 768) setSidebarOpen(false);
+                setSidebarOpen(false);
               }}
               className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
               title="Settings"
@@ -234,4 +219,5 @@ export const Sidebar: React.FC = () => {
     </>
   );
 };
+
 

@@ -56,30 +56,31 @@ export const Header: React.FC = () => {
 
   return (
     <header className="w-full h-16 px-4 md:px-6 flex items-center justify-between select-none z-30 shrink-0">
-      {/* Left: Hamburger (when closed) + Brand (when closed) + Model picker */}
-      <div className="flex items-center gap-2.5">
-        {!sidebarOpen && (
-          <button
-            onClick={toggleSidebar}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
-            title="Expand menu"
-            aria-label="Expand menu"
-          >
-            <Menu size={20} />
-          </button>
-        )}
+      {/* Left: Hamburger menu + Brand Logo + Model picker */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggleSidebar}
+          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
+          title="Main menu"
+          aria-label="Main menu"
+        >
+          <Menu size={20} />
+        </button>
 
-        {!sidebarOpen && (
-          <Link
-            href="/"
-            className="text-[20px] font-medium tracking-normal text-[var(--color-on-surface)] hover:opacity-90 transition-opacity mr-1"
-          >
-            Alizia
-          </Link>
-        )}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 text-[20px] font-medium tracking-tight text-[var(--color-on-surface)] hover:opacity-90 transition-opacity"
+        >
+          <img
+            src="/assets/alizia-logo.png"
+            alt="Alizia AI"
+            className="w-6 h-6 object-contain"
+          />
+          <span>Alizia</span>
+        </Link>
 
         {/* Clean Gemini Model Dropdown Pill */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative ml-1" ref={dropdownRef}>
           <button
             onClick={(e) => {
               e.stopPropagation();
