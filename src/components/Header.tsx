@@ -18,6 +18,7 @@ export const Header: React.FC = () => {
     settings,
     updateSettings,
     showToast,
+    sidebarOpen,
     toggleSidebar,
     proofMode,
     setProofMode,
@@ -55,44 +56,47 @@ export const Header: React.FC = () => {
 
   return (
     <header className="w-full h-16 px-4 md:px-6 flex items-center justify-between select-none z-30 shrink-0">
-      {/* Left: Hamburger menu + Brand name + Model picker */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={toggleSidebar}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
-          title="Main menu"
-          aria-label="Main menu"
-        >
-          <Menu size={20} />
-        </button>
+      {/* Left: Hamburger (when closed) + Brand (when closed) + Model picker */}
+      <div className="flex items-center gap-2.5">
+        {!sidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
+            title="Expand menu"
+            aria-label="Expand menu"
+          >
+            <Menu size={20} />
+          </button>
+        )}
 
-        <div className="flex items-center gap-2.5">
+        {!sidebarOpen && (
           <Link
             href="/"
-            className="text-[21px] font-medium tracking-normal text-[var(--color-on-surface)] hover:opacity-90 transition-opacity"
+            className="text-[20px] font-medium tracking-normal text-[var(--color-on-surface)] hover:opacity-90 transition-opacity mr-1"
           >
             Alizia
           </Link>
+        )}
 
-          {/* Clean Gemini Model Dropdown Pill */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setModelDropdownOpen((prev) => !prev);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-hover)] text-xs font-normal text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-all cursor-pointer"
-              aria-haspopup="listbox"
-              aria-expanded={modelDropdownOpen}
-            >
-              <span>{activeModel.name}</span>
-              <ChevronDown
-                size={14}
-                className={`text-[var(--color-on-surface-muted)] transition-transform duration-200 ${
-                  modelDropdownOpen ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
+        {/* Clean Gemini Model Dropdown Pill */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setModelDropdownOpen((prev) => !prev);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-hover)] text-xs font-normal text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-all cursor-pointer"
+            aria-haspopup="listbox"
+            aria-expanded={modelDropdownOpen}
+          >
+            <span>{activeModel.name}</span>
+            <ChevronDown
+              size={14}
+              className={`text-[var(--color-on-surface-muted)] transition-transform duration-200 ${
+                modelDropdownOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
 
             {modelDropdownOpen && (
               <div className="absolute top-[calc(100%+8px)] left-0 w-72 rounded-2xl p-2 bg-[var(--color-surface-container)] border border-[var(--color-outline)] shadow-[var(--shadow-floating)] z-50 animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1">
@@ -122,7 +126,6 @@ export const Header: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
 
       {/* Right: Proof Mode toggle + Theme button + User Avatar */}
       <div className="flex items-center gap-2">

@@ -32,14 +32,14 @@ export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
 
   if (isUser) {
     return (
-      <div className="w-full flex justify-end px-4 py-2 animate-in fade-in duration-200">
-        <div className="max-w-[85%] md:max-w-2xl flex flex-col items-end gap-1.5">
+      <div className="w-full flex justify-end px-2 sm:px-4 py-2 animate-in fade-in duration-200">
+        <div className="max-w-[85%] md:max-w-xl flex flex-col items-end gap-1.5">
           {message.attachments && message.attachments.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-1 justify-end">
               {message.attachments.map((att) => (
                 <div
                   key={att.id}
-                  className="rounded-xl overflow-hidden border border-[var(--color-outline)] shadow-xs max-w-xs max-h-48"
+                  className="rounded-2xl overflow-hidden border border-transparent shadow-xs max-w-xs max-h-48"
                 >
                   {att.type.startsWith('image/') ? (
                     <img src={att.dataUrl} alt={att.name} className="w-full h-full object-cover" />
@@ -52,7 +52,7 @@ export const ChatMessage: React.FC<{ message: Message }> = ({ message }) => {
               ))}
             </div>
           )}
-          <div className="px-5 py-3 rounded-2xl rounded-tr-sm bg-[var(--color-surface-container)] text-[var(--color-on-surface)] border border-[var(--color-outline)] shadow-xs text-sm md:text-base leading-relaxed break-words">
+          <div className="px-5 py-3.5 rounded-[22px] rounded-br-sm bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] text-[15px] leading-relaxed break-words shadow-xs">
             {message.content}
           </div>
         </div>

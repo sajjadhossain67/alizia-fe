@@ -14,19 +14,20 @@ export default function Home() {
   const { activeView } = useApp();
 
   return (
-    <div className="w-full h-screen flex flex-col bg-[var(--color-background)] text-[var(--color-on-surface)] overflow-hidden relative" id="app-container">
-      {/* On-Demand Slide-over History & Settings Drawer (0px space when closed) */}
+    <div className="w-screen h-screen flex bg-[var(--color-background)] text-[var(--color-on-surface)] overflow-hidden" id="app-container">
+      {/* Google Gemini Collapsible Sidebar Rail / Panel */}
       <Sidebar />
 
-      {/* Edge-to-Edge Header */}
-      <Header />
+      {/* Main Canvas Area - Fluid Edge-to-Edge */}
+      <div className="flex-1 h-full min-w-0 flex flex-col overflow-hidden relative">
+        <Header />
 
-      {/* Main Content Area - 100% Full Width Edge-to-Edge */}
-      <main className="flex-1 w-full h-[calc(100vh-64px)] overflow-hidden flex flex-col relative">
-        {activeView === 'chat' && <ChatView />}
-        {activeView === 'agents' && <AgentStudio />}
-        {activeView === 'rag' && <RagLab />}
-      </main>
+        <main className="flex-1 w-full h-[calc(100vh-64px)] overflow-hidden flex flex-col relative">
+          {activeView === 'chat' && <ChatView />}
+          {activeView === 'agents' && <AgentStudio />}
+          {activeView === 'rag' && <RagLab />}
+        </main>
+      </div>
 
       {/* Modals & Overlays */}
       <SettingsModal />
@@ -34,3 +35,4 @@ export default function Home() {
     </div>
   );
 }
+

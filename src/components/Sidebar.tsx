@@ -12,7 +12,7 @@ import {
   Settings,
   Sparkles,
   Layers,
-  ChevronRight,
+  Menu,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,6 +20,7 @@ export const Sidebar: React.FC = () => {
   const {
     sidebarOpen,
     setSidebarOpen,
+    toggleSidebar,
     createConversation,
     conversations,
     activeConversationId,
@@ -42,184 +43,195 @@ export const Sidebar: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sidebarOpen, setSidebarOpen]);
 
-  if (!sidebarOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex animate-in fade-in duration-200">
-      {/* Backdrop */}
+    <>
+      {/* Mobile Backdrop (only visible on mobile screens < md when open) */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+        className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity duration-300 md:hidden ${
+          sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={() => setSidebarOpen(false)}
         aria-hidden="true"
       />
 
-      {/* Slide-over Drawer */}
+      {/* Sidebar Panel: Docked on Desktop, Slide-over on Mobile */}
       <aside
-        className="relative z-10 w-72 sm:w-80 h-full bg-[var(--color-surface-container)] shadow-[var(--shadow-floating)] flex flex-col animate-in slide-in-from-left duration-250 select-none"
-        role="dialog"
-        aria-label="Navigation & History Drawer"
+        className={`fixed inset-y-0 left-0 z-50 md:relative md:z-20 h-full bg-[var(--color-surface-container)] flex flex-col justify-between select-none transition-all duration-300 ease-in-out ${
+          sidebarOpen
+            ? 'w-[270px] translate-x-0 opacity-100'
+            : '-translate-x-full md:translate-x-0 md:w-0 opacity-0 pointer-events-none'
+        } overflow-hidden`}
+        role="navigation"
+        aria-label="Main Navigation & History"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 pb-2">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4285F4] via-[#9B72CB] to-[#D96570] flex items-center justify-center text-white shadow-xs">
-              <Sparkles size={14} />
+        <div className="w-[270px] flex flex-col h-full">
+          {/* Top Header: Hamburger Collapse + Brand */}
+          <div className="h-16 px-4 flex items-center justify-between shrink-0">
+            <button
+              onClick={toggleSidebar}
+              className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+              title="Collapse menu"
+              aria-label="Collapse menu"
+            >
+              <Menu size={20} />
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[19px] font-medium tracking-normal text-[var(--color-on-surface)]">
+                Alizia
+              </span>
             </div>
-            <span className="text-[17px] font-medium text-[var(--color-on-surface)]">Alizia</span>
+
+            {/* Mobile close button */}
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+              aria-label="Close sidebar"
+            >
+              <X size={18} />
+            </button>
           </div>
 
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
-            aria-label="Close sidebar"
-          >
-            <X size={18} />
-          </button>
-        </div>
+          {/* New Chat Button */}
+          <div className="px-4 py-2 shrink-0">
+            <button
+              className="w-full flex items-center gap-3 py-2.5 px-4 rounded-full bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] active:scale-[0.98] font-medium text-[14px] shadow-xs transition-all cursor-pointer"
+              onClick={() => {
+                createConversation();
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+            >
+              <Plus size={18} className="text-[#8ab4f8]" />
+              <span>New chat</span>
+            </button>
+          </div>
 
-        {/* New Chat Button */}
-        <div className="px-4 py-3">
-          <button
-            className="w-full flex items-center gap-3 py-2.5 px-4 rounded-full bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] active:scale-[0.98] font-medium text-[14px] shadow-xs transition-all cursor-pointer"
-            onClick={() => {
-              createConversation();
-              setSidebarOpen(false);
-            }}
-          >
-            <Plus size={18} className="text-[#8ab4f8]" />
-            <span>New chat</span>
-          </button>
-        </div>
-
-        {/* Workspaces Navigation */}
-        <div className="px-3 py-1 flex flex-col gap-1">
-          <button
-            className={`flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
-              activeView === 'chat'
-                ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
-                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
-            }`}
-            onClick={() => {
-              setActiveView('chat');
-              setSidebarOpen(false);
-            }}
-          >
-            <div className="flex items-center gap-3">
+          {/* Workspaces / Navigation Section */}
+          <div className="px-3 py-2 flex flex-col gap-0.5 shrink-0">
+            <button
+              className={`flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
+                activeView === 'chat'
+                  ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                  : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
+              }`}
+              onClick={() => {
+                setActiveView('chat');
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+            >
               <MessageSquare size={17} className="opacity-70" />
               <span>Chat</span>
-            </div>
-          </button>
+            </button>
 
-          <button
-            className={`flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
-              activeView === 'agents'
-                ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
-                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
-            }`}
-            onClick={() => {
-              setActiveView('agents');
-              setSidebarOpen(false);
-            }}
-          >
-            <div className="flex items-center gap-3">
+            <button
+              className={`flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
+                activeView === 'agents'
+                  ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                  : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
+              }`}
+              onClick={() => {
+                setActiveView('agents');
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+            >
               <Bot size={17} className="opacity-70" />
               <span>Agents Studio</span>
-            </div>
-          </button>
+            </button>
 
-          <button
-            className={`flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
-              activeView === 'rag'
-                ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
-                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
-            }`}
-            onClick={() => {
-              setActiveView('rag');
-              setSidebarOpen(false);
-            }}
-          >
-            <div className="flex items-center gap-3">
+            <button
+              className={`flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
+                activeView === 'rag'
+                  ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                  : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
+              }`}
+              onClick={() => {
+                setActiveView('rag');
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+            >
               <Database size={17} className="opacity-70" />
               <span>Knowledge Base</span>
-            </div>
-          </button>
+            </button>
 
-          <Link
-            href="/design-system"
-            className="flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <div className="flex items-center gap-3">
+            <Link
+              href="/design-system"
+              className="flex items-center gap-3 w-full px-4 py-2 rounded-full text-[13.5px] font-normal text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
+              onClick={() => {
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+            >
               <Layers size={17} className="opacity-70" />
               <span>Design System</span>
-            </div>
-          </Link>
-        </div>
-
-        {/* Recent Conversations */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 custom-scrollbar flex flex-col gap-1 mt-2">
-          <span className="text-[12px] font-medium text-[var(--color-on-surface-muted)] px-4 py-1.5">
-            Recent
-          </span>
-          {conversations.length === 0 ? (
-            <div className="px-4 py-3 text-xs text-[var(--color-on-surface-muted)]">
-              No recent conversations
-            </div>
-          ) : (
-            conversations.map((convo) => {
-              const isActive = convo.id === activeConversationId && activeView === 'chat';
-              return (
-                <div
-                  key={convo.id}
-                  onClick={() => {
-                    selectConversation(convo.id);
-                    setSidebarOpen(false);
-                  }}
-                  className={`group flex items-center justify-between w-full px-4 py-2 rounded-full text-[13px] transition-colors cursor-pointer ${
-                    isActive
-                      ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
-                      : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] hover:text-[var(--color-on-surface)]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <MessageSquare size={14} className="shrink-0 opacity-50" />
-                    <span className="truncate">{convo.title || 'New conversation'}</span>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteConversation(convo.id);
-                    }}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-[var(--color-on-surface-muted)] hover:text-[var(--danger)] rounded transition-opacity cursor-pointer"
-                    title="Delete conversation"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="p-3 px-4 border-t border-[var(--color-outline)] flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-[var(--color-on-surface-muted)]">
-            <span className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-            <span>{backendOnline ? 'Online' : 'Local'}</span>
+            </Link>
           </div>
 
-          <button
-            onClick={() => {
-              setIsSettingsOpen(true);
-              setSidebarOpen(false);
-            }}
-            className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
-            title="Settings"
-          >
-            <Settings size={17} />
-          </button>
+          {/* Recent Conversations */}
+          <div className="flex-1 overflow-y-auto px-3 py-2 custom-scrollbar flex flex-col gap-0.5 min-h-0">
+            <span className="text-[12px] font-medium text-[var(--color-on-surface-muted)] px-4 py-1.5 shrink-0">
+              Recent
+            </span>
+            {conversations.length === 0 ? (
+              <div className="px-4 py-3 text-xs text-[var(--color-on-surface-muted)]">
+                No recent conversations
+              </div>
+            ) : (
+              conversations.map((convo) => {
+                const isActive = convo.id === activeConversationId && activeView === 'chat';
+                return (
+                  <div
+                    key={convo.id}
+                    onClick={() => {
+                      selectConversation(convo.id);
+                      if (window.innerWidth < 768) setSidebarOpen(false);
+                    }}
+                    className={`group flex items-center justify-between w-full px-4 py-2 rounded-full text-[13px] transition-colors cursor-pointer ${
+                      isActive
+                        ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                        : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] hover:text-[var(--color-on-surface)]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      <MessageSquare size={14} className="shrink-0 opacity-50" />
+                      <span className="truncate">{convo.title || 'New conversation'}</span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteConversation(convo.id);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-[var(--color-on-surface-muted)] hover:text-[var(--danger)] rounded-full transition-opacity cursor-pointer"
+                      title="Delete conversation"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Footer: Settings & Status */}
+          <div className="p-3 px-4 border-t border-[var(--color-outline)] shrink-0 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs text-[var(--color-on-surface-muted)]">
+              <span className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+              <span>{backendOnline ? 'Online' : 'Local'}</span>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsSettingsOpen(true);
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+              title="Settings"
+              aria-label="Settings"
+            >
+              <Settings size={17} />
+            </button>
+          </div>
         </div>
       </aside>
-    </div>
+    </>
   );
 };
+

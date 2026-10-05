@@ -25,13 +25,13 @@ export const ChatView: React.FC = () => {
       {/* Scrollable messages area */}
       <div
         ref={scrollAreaRef}
-        className="flex-1 w-full overflow-y-auto px-2 md:px-6 py-4 scroll-smooth custom-scrollbar flex flex-col items-center"
+        className="flex-1 w-full overflow-y-auto px-2 md:px-6 py-2 scroll-smooth custom-scrollbar flex flex-col items-center"
       >
-        <div className="w-full max-w-4xl flex-1 flex flex-col justify-center">
+        <div className={`w-full max-w-[830px] flex-1 flex flex-col ${messages.length === 0 ? 'justify-center' : 'justify-start'}`}>
           {messages.length === 0 ? (
             <WelcomeHero />
           ) : (
-            <div className="w-full flex flex-col gap-4 py-4 pb-12">
+            <div className="w-full flex flex-col gap-5 py-4 pb-8">
               {messages.map((msg) => (
                 <ChatMessage key={msg.id} message={msg} />
               ))}
