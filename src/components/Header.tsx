@@ -10,7 +10,6 @@ import {
   Sun,
   ShieldCheck,
   Check,
-  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -60,17 +59,17 @@ export const Header: React.FC = () => {
       <div className="flex items-center gap-3">
         <button
           onClick={toggleSidebar}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
           title="Main menu"
           aria-label="Main menu"
         >
           <Menu size={20} />
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Link
             href="/"
-            className="text-[20px] font-medium tracking-tight text-[var(--color-on-surface)] hover:opacity-90 transition-opacity"
+            className="text-[21px] font-medium tracking-normal text-[var(--color-on-surface)] hover:opacity-90 transition-opacity"
           >
             Alizia
           </Link>
@@ -82,7 +81,7 @@ export const Header: React.FC = () => {
                 e.stopPropagation();
                 setModelDropdownOpen((prev) => !prev);
               }}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-hover)] text-xs font-medium text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-hover)] text-xs font-normal text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-all cursor-pointer"
               aria-haspopup="listbox"
               aria-expanded={modelDropdownOpen}
             >
@@ -105,13 +104,13 @@ export const Header: React.FC = () => {
                       onClick={() => handleSelectModel(model.id, model.name)}
                       className={`flex flex-col gap-0.5 p-3 rounded-xl text-left transition-colors cursor-pointer ${
                         isSelected
-                          ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-semibold'
+                          ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
                           : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
                       }`}
                     >
                       <div className="flex items-center justify-between w-full">
                         <span className="text-xs font-medium">{model.name}</span>
-                        {isSelected && <Check size={14} className="text-[var(--accent)]" />}
+                        {isSelected && <Check size={14} className="text-[#8ab4f8]" />}
                       </div>
                       <span className="text-[11px] text-[var(--color-on-surface-muted)] leading-tight">
                         {model.description}
@@ -135,18 +134,18 @@ export const Header: React.FC = () => {
           }}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
             proofMode
-              ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
-              : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
+              ? 'bg-[var(--color-surface-container)] text-[#8ab4f8] hover:bg-[var(--color-surface-hover)]'
+              : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)]'
           }`}
           title="Verifiable Proof Mode"
         >
-          <ShieldCheck size={15} className={proofMode ? 'text-emerald-400' : 'text-current'} />
+          <ShieldCheck size={15} className={proofMode ? 'text-[#8ab4f8]' : 'text-current'} />
           <span className="hidden sm:inline">Proof Mode</span>
         </button>
 
         <button
           onClick={handleToggleTheme}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container)] transition-colors cursor-pointer"
           title={`Theme: ${settings.theme}`}
           aria-label="Toggle theme"
         >
@@ -164,3 +163,4 @@ export const Header: React.FC = () => {
     </header>
   );
 };
+

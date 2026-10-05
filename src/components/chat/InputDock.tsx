@@ -34,7 +34,7 @@ export const InputDock: React.FC = () => {
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 220)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
   };
 
@@ -95,12 +95,12 @@ export const InputDock: React.FC = () => {
   const hasContent = inputVal.trim().length > 0 || attachments.length > 0;
 
   return (
-    <div className="w-full max-w-[840px] mx-auto px-4 pb-4 select-none">
+    <div className="w-full max-w-[830px] mx-auto px-4 pb-6 pt-1 select-none shrink-0">
       {/* Signature Gemini Capsule Container */}
-      <div className="w-full rounded-[28px] bg-[var(--color-surface-container)] transition-all duration-200 p-3 flex flex-col gap-2">
+      <div className="w-full rounded-[28px] bg-[var(--color-surface-container)] hover:bg-[var(--color-surface-container-high)] focus-within:bg-[var(--color-surface-container)] transition-all duration-200 p-3 sm:p-3.5 flex flex-col gap-1.5 shadow-sm">
         {/* Attachment Previews */}
         {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-2 pt-1 pb-2">
+          <div className="flex flex-wrap gap-2 px-2 pt-1 pb-1">
             {attachments.map((att, idx) => (
               <div
                 key={att.id}
@@ -132,20 +132,20 @@ export const InputDock: React.FC = () => {
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
           placeholder="Ask Alizia"
-          className="w-full bg-transparent border-none text-[15px] md:text-[16px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-disabled)] focus:outline-none resize-none px-3 pt-1 leading-relaxed custom-scrollbar max-h-48"
+          className="w-full bg-transparent border-none text-[16px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-muted)] focus:outline-none resize-none px-3 pt-1 pb-1 leading-relaxed custom-scrollbar max-h-48"
         />
 
         {/* Bottom Actions Row inside the capsule */}
         <div className="flex items-center justify-between px-1 pt-1">
-          {/* Left Upload Button */}
+          {/* Left: Upload Button & Proof Mode */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
               title="Add image or document"
               aria-label="Add file"
             >
-              <Plus size={20} />
+              <Plus size={20} strokeWidth={2} />
             </button>
             <input
               ref={fileInputRef}
@@ -156,18 +156,18 @@ export const InputDock: React.FC = () => {
               onChange={handleFileUpload}
             />
 
-            {/* Proof Mode Toggle */}
+            {/* Proof Mode Toggle Pill */}
             <button
               type="button"
               onClick={() => setProofMode(!proofMode)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
                 proofMode
-                  ? 'bg-emerald-500/15 text-emerald-400'
+                  ? 'bg-[var(--color-surface-hover)] text-[#8ab4f8]'
                   : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
               }`}
               title={proofMode ? 'Proof Mode ON' : 'Proof Mode OFF'}
             >
-              <ShieldCheck size={14} className={proofMode ? 'text-emerald-400' : 'text-current'} />
+              <ShieldCheck size={14} className={proofMode ? 'text-[#8ab4f8]' : 'text-current'} />
               <span>Proof</span>
             </button>
           </div>
@@ -179,7 +179,7 @@ export const InputDock: React.FC = () => {
               className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                 isDictating
                   ? 'bg-red-500/20 text-red-400 animate-pulse'
-                  : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
+                  : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
               }`}
               title={isDictating ? 'Stop dictation' : 'Voice input'}
               aria-label="Voice input"
@@ -190,18 +190,18 @@ export const InputDock: React.FC = () => {
             <button
               onClick={handleSubmit}
               disabled={!hasContent && !isGenerating}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                 isGenerating
-                  ? 'bg-[var(--color-on-surface)] text-[var(--color-background)] hover:opacity-90 active:scale-95'
+                  ? 'bg-red-500 hover:bg-red-600 text-white cursor-pointer active:scale-95 shadow-sm'
                   : hasContent
-                  ? 'bg-[var(--color-on-surface)] text-[var(--color-background)] hover:opacity-90 active:scale-95 shadow-xs'
-                  : 'text-[var(--color-on-surface-disabled)] opacity-40 cursor-not-allowed'
+                  ? 'bg-white text-[#131314] hover:bg-[#f0f4f9] cursor-pointer active:scale-95 shadow-sm'
+                  : 'text-[var(--color-on-surface-disabled)] opacity-30 cursor-not-allowed'
               }`}
               title={isGenerating ? 'Stop generating' : 'Send message'}
               aria-label={isGenerating ? 'Stop generating' : 'Send message'}
             >
               {isGenerating ? (
-                <Square size={13} className="fill-current" />
+                <Square size={12} className="fill-current" />
               ) : (
                 <ArrowUp size={18} strokeWidth={2.5} />
               )}
@@ -211,9 +211,10 @@ export const InputDock: React.FC = () => {
       </div>
 
       {/* Gemini Minimal Disclaimer */}
-      <p className="text-[12px] text-center text-[var(--color-on-surface-disabled)] mt-2 font-normal">
+      <p className="text-[12px] text-center text-[var(--color-on-surface-muted)] mt-2.5 font-normal">
         Alizia can make mistakes, so double-check it
       </p>
     </div>
   );
 };
+

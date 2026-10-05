@@ -20,7 +20,6 @@ export const Sidebar: React.FC = () => {
   const {
     sidebarOpen,
     setSidebarOpen,
-    toggleSidebar,
     createConversation,
     conversations,
     activeConversationId,
@@ -49,32 +48,29 @@ export const Sidebar: React.FC = () => {
     <div className="fixed inset-0 z-50 flex animate-in fade-in duration-200">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
         onClick={() => setSidebarOpen(false)}
         aria-hidden="true"
       />
 
       {/* Slide-over Drawer */}
       <aside
-        className="relative z-10 w-80 max-w-[85vw] h-full bg-[var(--color-surface)] border-r border-[var(--color-outline)] shadow-[var(--shadow-floating)] flex flex-col animate-in slide-in-from-left duration-250"
+        className="relative z-10 w-72 sm:w-80 h-full bg-[var(--color-surface-container)] shadow-[var(--shadow-floating)] flex flex-col animate-in slide-in-from-left duration-250 select-none"
         role="dialog"
         aria-label="Navigation & History Drawer"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--color-outline)] bg-[var(--color-surface-container)]">
+        <div className="flex items-center justify-between p-4 pb-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4285F4] via-[#9B72CB] to-[#D96570] flex items-center justify-center text-white shadow-xs">
-              <Sparkles size={16} />
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#4285F4] via-[#9B72CB] to-[#D96570] flex items-center justify-center text-white shadow-xs">
+              <Sparkles size={14} />
             </div>
-            <div>
-              <h2 className="text-sm font-bold text-[var(--color-on-surface)] leading-tight">Alizia AI</h2>
-              <span className="text-[11px] text-[var(--color-on-surface-muted)]">Frontier Workspace</span>
-            </div>
+            <span className="text-[17px] font-medium text-[var(--color-on-surface)]">Alizia</span>
           </div>
 
           <button
             onClick={() => setSidebarOpen(false)}
-            className="p-1.5 rounded-full text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
             aria-label="Close sidebar"
           >
             <X size={18} />
@@ -82,102 +78,91 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* New Chat Button */}
-        <div className="p-3">
+        <div className="px-4 py-3">
           <button
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-[var(--accent)] text-white hover:brightness-105 active:scale-[0.98] font-medium text-xs md:text-sm shadow-sm transition-all cursor-pointer"
+            className="w-full flex items-center gap-3 py-2.5 px-4 rounded-full bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] active:scale-[0.98] font-medium text-[14px] shadow-xs transition-all cursor-pointer"
             onClick={() => {
               createConversation();
               setSidebarOpen(false);
             }}
           >
-            <Plus size={16} />
-            <span>New Chat</span>
+            <Plus size={18} className="text-[#8ab4f8]" />
+            <span>New chat</span>
           </button>
         </div>
 
-        {/* Mode Switcher */}
+        {/* Workspaces Navigation */}
         <div className="px-3 py-1 flex flex-col gap-1">
-          <span className="text-[10px] font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wider px-2 py-1">
-            Workspaces
-          </span>
           <button
-            className={`flex items-center justify-between w-full px-3 py-2 rounded-[var(--radius-md)] text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
               activeView === 'chat'
-                ? 'bg-[var(--accent-subtle)] text-[var(--accent)]'
-                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-hover)]'
+                ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
             }`}
             onClick={() => {
               setActiveView('chat');
               setSidebarOpen(false);
             }}
           >
-            <div className="flex items-center gap-2.5">
-              <MessageSquare size={16} />
-              <span>Alizia Chat</span>
+            <div className="flex items-center gap-3">
+              <MessageSquare size={17} className="opacity-70" />
+              <span>Chat</span>
             </div>
-            <ChevronRight size={14} className="opacity-50" />
           </button>
 
           <button
-            className={`flex items-center justify-between w-full px-3 py-2 rounded-[var(--radius-md)] text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
               activeView === 'agents'
-                ? 'bg-[var(--accent-subtle)] text-[var(--accent)]'
-                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-hover)]'
+                ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
             }`}
             onClick={() => {
               setActiveView('agents');
               setSidebarOpen(false);
             }}
           >
-            <div className="flex items-center gap-2.5">
-              <Bot size={16} />
-              <span>Autonomous Agent</span>
+            <div className="flex items-center gap-3">
+              <Bot size={17} className="opacity-70" />
+              <span>Agents Studio</span>
             </div>
-            <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-400">
-              Auto
-            </span>
           </button>
 
           <button
-            className={`flex items-center justify-between w-full px-3 py-2 rounded-[var(--radius-md)] text-xs font-medium transition-colors cursor-pointer ${
+            className={`flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal transition-colors cursor-pointer ${
               activeView === 'rag'
-                ? 'bg-[var(--accent-subtle)] text-[var(--accent)]'
-                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-hover)]'
+                ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)]'
             }`}
             onClick={() => {
               setActiveView('rag');
               setSidebarOpen(false);
             }}
           >
-            <div className="flex items-center gap-2.5">
-              <Database size={16} />
-              <span>Knowledge & RAG</span>
+            <div className="flex items-center gap-3">
+              <Database size={17} className="opacity-70" />
+              <span>Knowledge Base</span>
             </div>
-            <ChevronRight size={14} className="opacity-50" />
           </button>
 
           <Link
             href="/design-system"
-            className="flex items-center justify-between w-full px-3 py-2 rounded-[var(--radius-md)] text-xs font-medium text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+            className="flex items-center justify-between w-full px-4 py-2.5 rounded-full text-[13.5px] font-normal text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
             onClick={() => setSidebarOpen(false)}
           >
-            <div className="flex items-center gap-2.5">
-              <Layers size={16} />
+            <div className="flex items-center gap-3">
+              <Layers size={17} className="opacity-70" />
               <span>Design System</span>
             </div>
-            <span className="text-[10px] uppercase font-bold px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-400">
-              Tokens
-            </span>
           </Link>
         </div>
 
         {/* Recent Conversations */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 custom-scrollbar flex flex-col gap-1">
-          <span className="text-[10px] font-semibold text-[var(--color-on-surface-muted)] uppercase tracking-wider px-2 py-1">
-            Recent Conversations
+        <div className="flex-1 overflow-y-auto px-3 py-2 custom-scrollbar flex flex-col gap-1 mt-2">
+          <span className="text-[12px] font-medium text-[var(--color-on-surface-muted)] px-4 py-1.5">
+            Recent
           </span>
           {conversations.length === 0 ? (
-            <div className="p-4 text-center text-xs text-[var(--color-on-surface-muted)]">
+            <div className="px-4 py-3 text-xs text-[var(--color-on-surface-muted)]">
               No recent conversations
             </div>
           ) : (
@@ -190,14 +175,14 @@ export const Sidebar: React.FC = () => {
                     selectConversation(convo.id);
                     setSidebarOpen(false);
                   }}
-                  className={`group flex items-center justify-between w-full px-3 py-2 rounded-[var(--radius-md)] text-xs font-medium transition-colors cursor-pointer ${
+                  className={`group flex items-center justify-between w-full px-4 py-2 rounded-full text-[13px] transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-semibold'
-                      : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container)] hover:text-[var(--color-on-surface)]'
+                      ? 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface)] font-medium'
+                      : 'text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface)] hover:text-[var(--color-on-surface)]'
                   }`}
                 >
-                  <div className="flex items-center gap-2 truncate">
-                    <MessageSquare size={14} className="shrink-0 opacity-60" />
+                  <div className="flex items-center gap-2.5 truncate">
+                    <MessageSquare size={14} className="shrink-0 opacity-50" />
                     <span className="truncate">{convo.title || 'New conversation'}</span>
                   </div>
                   <button
@@ -217,10 +202,10 @@ export const Sidebar: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-[var(--color-outline)] bg-[var(--color-surface-container)] flex items-center justify-between">
+        <div className="p-3 px-4 border-t border-[var(--color-outline)] flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-[var(--color-on-surface-muted)]">
-            <span className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-500 ring-2 ring-emerald-500/20' : 'bg-amber-500 ring-2 ring-amber-500/20'}`} />
-            <span>{backendOnline ? 'Online (v1.0)' : 'Simulator Active'}</span>
+            <span className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+            <span>{backendOnline ? 'Online' : 'Local'}</span>
           </div>
 
           <button
@@ -228,10 +213,10 @@ export const Sidebar: React.FC = () => {
               setIsSettingsOpen(true);
               setSidebarOpen(false);
             }}
-            className="p-1.5 rounded-full text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
             title="Settings"
           >
-            <Settings size={16} />
+            <Settings size={17} />
           </button>
         </div>
       </aside>

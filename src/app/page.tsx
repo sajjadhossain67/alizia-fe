@@ -14,7 +14,7 @@ export default function Home() {
   const { activeView } = useApp();
 
   return (
-    <div className="app-container" id="app-container">
+    <div className="w-full h-screen flex flex-col bg-[var(--color-background)] text-[var(--color-on-surface)] overflow-hidden relative" id="app-container">
       {/* On-Demand Slide-over History & Settings Drawer (0px space when closed) */}
       <Sidebar />
 
