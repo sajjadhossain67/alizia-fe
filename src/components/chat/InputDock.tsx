@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Plus, ArrowUp, Square, Mic, X, FileText, ShieldCheck, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Plus, ArrowUp, Square, Mic, X, FileText, ShieldCheck } from 'lucide-react';
 import { Attachment } from '../../types';
 
 export const InputDock: React.FC = () => {
@@ -24,7 +24,6 @@ export const InputDock: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync speech dictation transcript into input
   useEffect(() => {
     if (currentTranscript) {
       setInputVal(currentTranscript);
@@ -35,7 +34,7 @@ export const InputDock: React.FC = () => {
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 220)}px`;
     }
   };
 
@@ -96,44 +95,55 @@ export const InputDock: React.FC = () => {
   const hasContent = inputVal.trim().length > 0 || attachments.length > 0;
 
   return (
-    <div className="w-full flex flex-col items-center justify-center px-4 pb-4 pt-1 pointer-events-none select-none z-20">
-      <div className="w-full max-w-3xl flex flex-col gap-2 pointer-events-auto">
-        {/* Floating Input Dock Pill */}
-        <div className="relative w-full rounded-[28px] md:rounded-[32px] bg-[var(--color-surface-container)]/95 border border-[var(--color-outline)] shadow-[var(--shadow-floating)] backdrop-blur-2xl transition-all duration-200 focus-within:border-[var(--accent)]/60 focus-within:ring-2 focus-within:ring-[var(--accent)]/20 p-2 md:p-2.5">
-          {/* Attachment Previews Tray */}
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 px-3 pt-1 pb-2 border-b border-[var(--color-outline)] mb-2">
-              {attachments.map((att, idx) => (
-                <div
-                  key={att.id}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--color-surface)] border border-[var(--color-outline)] text-xs text-[var(--color-on-surface)] shadow-xs"
+    <div className="w-full max-w-[840px] mx-auto px-4 pb-4 select-none">
+      {/* Signature Gemini Capsule Container */}
+      <div className="w-full rounded-[28px] bg-[var(--color-surface-container)] transition-all duration-200 p-3 flex flex-col gap-2">
+        {/* Attachment Previews */}
+        {attachments.length > 0 && (
+          <div className="flex flex-wrap gap-2 px-2 pt-1 pb-2">
+            {attachments.map((att, idx) => (
+              <div
+                key={att.id}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-surface)] text-xs text-[var(--color-on-surface)]"
+              >
+                {att.type.startsWith('image/') ? (
+                  <img src={att.dataUrl} className="w-4 h-4 rounded-full object-cover" alt={att.name} />
+                ) : (
+                  <FileText size={13} className="text-[var(--accent)]" />
+                )}
+                <span className="truncate max-w-[140px] font-medium text-[12px]">{att.name}</span>
+                <button
+                  onClick={() => removeAttachment(idx)}
+                  className="p-0.5 rounded-full hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface-muted)] cursor-pointer"
+                  title="Remove"
                 >
-                  {att.type.startsWith('image/') ? (
-                    <img src={att.dataUrl} className="w-4 h-4 rounded-full object-cover" alt={att.name} />
-                  ) : (
-                    <FileText size={13} className="text-[var(--accent)]" />
-                  )}
-                  <span className="truncate max-w-[120px] font-medium text-[11px]">{att.name}</span>
-                  <button
-                    onClick={() => removeAttachment(idx)}
-                    className="p-0.5 rounded-full hover:bg-[var(--color-surface-hover)] text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] cursor-pointer"
-                    title="Remove attachment"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
-          {/* Input Row */}
-          <div className="flex items-end gap-2 px-1">
-            {/* Left Upload Button */}
+        {/* Textarea */}
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          value={inputVal}
+          onChange={handleTextChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask Alizia"
+          className="w-full bg-transparent border-none text-[15px] md:text-[16px] text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-disabled)] focus:outline-none resize-none px-3 pt-1 leading-relaxed custom-scrollbar max-h-48"
+        />
+
+        {/* Bottom Actions Row inside the capsule */}
+        <div className="flex items-center justify-between px-1 pt-1">
+          {/* Left Upload Button */}
+          <div className="flex items-center gap-1">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="p-2 rounded-full text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer shrink-0 mb-0.5"
-              title="Attach images or documents"
-              aria-label="Attach file"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer"
+              title="Add image or document"
+              aria-label="Add file"
             >
               <Plus size={20} />
             </button>
@@ -146,77 +156,64 @@ export const InputDock: React.FC = () => {
               onChange={handleFileUpload}
             />
 
-            {/* Main Auto-Grow Textarea */}
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              value={inputVal}
-              onChange={handleTextChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask Alizia anything..."
-              className="flex-1 bg-transparent border-none text-sm md:text-base text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-muted)] focus:outline-none resize-none py-2 px-1 max-h-48 leading-relaxed custom-scrollbar"
-            />
+            {/* Proof Mode Toggle */}
+            <button
+              type="button"
+              onClick={() => setProofMode(!proofMode)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                proofMode
+                  ? 'bg-emerald-500/15 text-emerald-400'
+                  : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
+              }`}
+              title={proofMode ? 'Proof Mode ON' : 'Proof Mode OFF'}
+            >
+              <ShieldCheck size={14} className={proofMode ? 'text-emerald-400' : 'text-current'} />
+              <span>Proof</span>
+            </button>
+          </div>
 
-            {/* Right Action Tools: Proof Mode Toggle, Mic, Send/Stop */}
-            <div className="flex items-center gap-1.5 shrink-0 mb-0.5">
-              {/* Proof Mode Chip */}
-              <button
-                type="button"
-                onClick={() => setProofMode(!proofMode)}
-                className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
-                  proofMode
-                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-xs shadow-emerald-500/10'
-                    : 'bg-transparent text-[var(--color-on-surface-muted)] border-transparent hover:bg-[var(--color-surface-hover)]'
-                }`}
-                title={proofMode ? 'Proof Mode Active: Claims are cryptographically grounded' : 'Click to enable Proof Mode'}
-              >
-                <ShieldCheck size={14} className={proofMode ? 'text-emerald-400' : 'text-current'} />
-                <span>Proof</span>
-              </button>
+          {/* Right: Mic & Send */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={toggleDictation}
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+                isDictating
+                  ? 'bg-red-500/20 text-red-400 animate-pulse'
+                  : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
+              }`}
+              title={isDictating ? 'Stop dictation' : 'Voice input'}
+              aria-label="Voice input"
+            >
+              <Mic size={18} />
+            </button>
 
-              {/* Dictation Mic Button */}
-              <button
-                onClick={toggleDictation}
-                className={`p-2 rounded-full transition-colors cursor-pointer ${
-                  isDictating
-                    ? 'bg-red-500/20 text-red-400 animate-pulse'
-                    : 'text-[var(--color-on-surface-muted)] hover:text-[var(--color-on-surface)] hover:bg-[var(--color-surface-hover)]'
-                }`}
-                title={isDictating ? 'Stop dictation' : 'Dictate with voice'}
-                aria-label="Voice dictation"
-              >
-                <Mic size={19} />
-              </button>
-
-              {/* Send / Stop Button */}
-              <button
-                onClick={handleSubmit}
-                disabled={!hasContent && !isGenerating}
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs ${
-                  isGenerating
-                    ? 'bg-[var(--color-on-surface)] text-[var(--color-surface)] hover:opacity-90 active:scale-95'
-                    : hasContent
-                    ? 'bg-[var(--accent)] text-white hover:brightness-105 active:scale-95 shadow-sm'
-                    : 'bg-[var(--color-surface-hover)] text-[var(--color-on-surface-muted)] opacity-50 cursor-not-allowed'
-                }`}
-                title={isGenerating ? 'Stop generating' : 'Send message'}
-                aria-label={isGenerating ? 'Stop generating' : 'Send message'}
-              >
-                {isGenerating ? (
-                  <Square size={13} className="fill-current" />
-                ) : (
-                  <ArrowUp size={18} strokeWidth={2.5} />
-                )}
-              </button>
-            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={!hasContent && !isGenerating}
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                isGenerating
+                  ? 'bg-[var(--color-on-surface)] text-[var(--color-background)] hover:opacity-90 active:scale-95'
+                  : hasContent
+                  ? 'bg-[var(--color-on-surface)] text-[var(--color-background)] hover:opacity-90 active:scale-95 shadow-xs'
+                  : 'text-[var(--color-on-surface-disabled)] opacity-40 cursor-not-allowed'
+              }`}
+              title={isGenerating ? 'Stop generating' : 'Send message'}
+              aria-label={isGenerating ? 'Stop generating' : 'Send message'}
+            >
+              {isGenerating ? (
+                <Square size={13} className="fill-current" />
+              ) : (
+                <ArrowUp size={18} strokeWidth={2.5} />
+              )}
+            </button>
           </div>
         </div>
-
-        {/* Disclaimer Note */}
-        <p className="text-[11px] text-center text-[var(--color-on-surface-muted)] tracking-wide">
-          Alizia AI can make mistakes. Verify important factual and mathematical claims with Proof Mode.
-        </p>
       </div>
+
+      {/* Gemini Minimal Disclaimer */}
+      <p className="text-[12px] text-center text-[var(--color-on-surface-disabled)] mt-2 font-normal">
+        Alizia can make mistakes, so double-check it
+      </p>
     </div>
   );
 };
